@@ -1,23 +1,12 @@
 // Navbar.js
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import './Navbar.css'; // Import CSS file for Navbar styles
+import { useUser } from '../UserContext';
 
 const Navbar = ({ loggedInUserRole }) => {
-  const [userRole, setUserRole] = useState('');
-
-  useEffect(() => {
-    // Fetch user role based on the logged-in user's role
-    const apiUrl = loggedInUserRole === 'admin'
-      ? 'http://localhost:3000/api/users/1'
-      : 'http://localhost:3000/api/users/2';
-
-    fetch(apiUrl)
-      .then(response => response.json())
-      .then(data => setUserRole(data.role))
-      .catch(error => console.error('Error fetching user role:', error));
-  }, [loggedInUserRole]);
-
+  const { userData } = useUser();
+  const userRole = userData.role;
   return (
     <nav className="navbar">
       <div className="navbar-left">

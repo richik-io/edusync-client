@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom'; // Import Link from react-router-dom
-
+import './styles.css'; // Import CSS file for styling
+import Navbar from './Navbar';
 function SessionUpdate() {
   const [sessions, setSessions] = useState([]);
 
@@ -42,8 +43,9 @@ function SessionUpdate() {
 
   return (
     <div>
+      <Navbar/>
+    <div className="session-update-container">
       <h2>Sessions</h2>
-      <Link to="/session/view"><button>Submit</button></Link>
       <table>
         <thead>
           <tr>
@@ -66,15 +68,30 @@ function SessionUpdate() {
               <td>{session.class}</td>
               <td>{session.status}</td>
               <td>
-                <button onClick={() => handleStatusChange(session.session_id, 'accept')}>Accept</button>
-                <button onClick={() => handleStatusChange(session.session_id, 'reject')}>Reject</button>
+                <button
+                  className={`status-button ${session.status === 'accept' ? 'accept' : 'reject'}`}
+                  onClick={() => handleStatusChange(session.session_id, session.status === 'accept' ? 'reject' : 'accept')}
+                  disabled={session.status === 'accept'}
+                >
+                  Accept
+                </button>
+                <button
+                  className={`status-button ${session.status === 'reject' ? 'accept' : 'reject'}`}
+                  onClick={() => handleStatusChange(session.session_id, session.status === 'reject' ? 'accept' : 'reject')}
+                  disabled={session.status === 'reject'}
+                >
+                  Reject
+                </button>
               </td>
             </tr>
           ))}
         </tbody>
       </table>
+      <div className="submit-button-container">
+        <Link to="/session/view"><button className="submit-button">Submit</button></Link>
+      </div>
     </div>
-  );
+    </div>  );
 }
 
 export default SessionUpdate;

@@ -1,60 +1,60 @@
-// Login.js
+// LoginPage.js
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useUser } from '../UserContext';
 
-const Login = () => {
-  const [username, setUsername] = useState('');
+const LoginPage = () => {
+  const [userId, setUserId] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
   const navigate = useNavigate();
+  const { updateUser } = useUser();
 
-  const handleLogin = () => {
-    // Implement your login logic here
-    // For demonstration, let's assume different credentials for different roles
-    if (username === 'admin' && password === 'adminpassword') {
-      // Fetch user data for admin
-      fetchUserData('admin');
-    } else if (username === 'volunteer' && password === 'volunteerpassword') {
-      // Fetch user data for volunteer
-      fetchUserData('volunteer');
-    } else if (username === 'teamlead' && password === 'teamleadpassword') {
-      // Fetch user data for team lead
-      fetchUserData('teamlead');
-    } else {
-      alert('Invalid credentials');
+  const handleLogin = async () => {
+    try {
+      const response = await fetch('http://localhost:3000/api/login/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ user_id: userId, password }),
+      });
+
+      if (response.ok) {
+        const userDataResponse = await fetch(`http://localhost:3000/api/users/${userId}`);
+        if (userDataResponse.ok) {
+          const userData = await userDataResponse.json();
+          updateUser(userData);
+          navigate('/home');
+        } else {
+          setError('Failed to fetch user data');
+        }
+      } else {
+        const data = await response.json();
+        setError(data.message || 'Login failed');
+      }
+    } catch (error) {
+      setError('Login failed');
     }
-  };
-
-  const fetchUserData = (role) => {
-    const apiUrl = role === 'admin'
-      ? 'http://localhost:3000/api/users/1'
-      : 'http://localhost:3000/api/users/2';
-
-    fetch(apiUrl)
-      .then(response => response.json())
-      .then(data => {
-        // Store user data in localStorage or state
-        // For simplicity, let's just log the data
-        console.log('User data:', data);
-        // Redirect to the Home page after successful login
-        navigate('/home');
-      })
-      .catch(error => console.error('Error fetching user data:', error));
   };
 
   return (
     <div>
       <h2>Login</h2>
-      <div>
-        <label>Username: </label>
-        <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} />
-      </div>
-      <div>
-        <label>Password: </label>
-        <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
-      </div>
-      <button onClick={handleLogin}>Login</button>
+      <form onSubmit={(e) => { e.preventDefault(); handleLogin(); }}>
+        <div>
+          <label>User ID:</label>
+          <input type="text" value={userId} onChange={(e) => setUserId(e.target.value)} />
+        </div>
+        <div>
+          <label>Password:</label>
+          <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
+        </div>
+        <button type="submit">Login</button>
+        {error && <p>{error}</p>}
+      </form>
     </div>
   );
 };
 
-export default Login;
+export default LoginPage;

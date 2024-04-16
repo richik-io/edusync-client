@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import Navbar from './Navbar';
 
 function SessionView() {
   const [sessions, setSessions] = useState([]);
@@ -12,6 +13,7 @@ function SessionView() {
 
   return (
     <div>
+      <Navbar/>
       <h2>Sessions</h2>
       <table>
         <thead>

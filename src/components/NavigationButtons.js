@@ -11,7 +11,7 @@ const NavigationButtons = () => {
       <Link to="/attendance">
         <button>Attendance</button>
       </Link>
-      <Link to="/logout">
+      <Link to="/">
         <button>Logout</button>
       </Link>
     </div>
